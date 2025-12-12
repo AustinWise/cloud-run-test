@@ -16,7 +16,7 @@ var app = builder.Build();
 
 app.MapHealthChecks("/health");
 
-app.MapGet("/version", () => 2);
+app.MapGet("/version", () => 3);
 
 if (app.Environment.IsDevelopment())
 {
