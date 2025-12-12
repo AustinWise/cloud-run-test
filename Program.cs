@@ -10,8 +10,13 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
+
+app.MapGet("/version", () => 1);
 
 if (app.Environment.IsDevelopment())
 {
@@ -37,7 +42,16 @@ todosApi.MapGet("/{id}", Results<Ok<Todo>, NotFound> (int id) =>
         : TypedResults.NotFound())
     .WithName("GetTodoById");
 
-app.Run();
+string? port = Environment.GetEnvironmentVariable("PORT");
+
+if (string.IsNullOrEmpty(port))
+{
+    app.Run();
+}
+else
+{
+    app.Run($"http://0.0.0.0:{port}");
+}
 
 public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
 
